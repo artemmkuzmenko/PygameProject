@@ -1,8 +1,12 @@
+from board import Board
+
+
 class Player:
     def __init__(self, pos, image):
         self.x, self.y = self.pos = pos
         self.treasure = False
         self.image = image
+        self.lives = 3
 
     def set_pos(self, pos):
         self.x, self.y = self.pos = pos
@@ -27,3 +31,48 @@ class Hole:
 
     def lose_treasure(self):
         self.treasure = False
+
+    def injure(self, player):
+        if player.pos == self.pos:
+            player.lives -= 1
+
+
+class River:
+    def __init__(self, positions):
+        self.positions = positions
+        self.treasure = False
+
+    def get_treasure(self):
+        self.treasure = True
+
+    def lose_treasure(self):
+        self.treasure = False
+
+    def injure(self, player):
+        for pos in self.positions:
+            if player.pos == pos:
+                player.lives -= 1
+
+
+class TreasurePlace:
+    def __init__(self, pos):
+        self.pos = pos
+        self.treasure = True
+
+    def lose_treasure(self):
+        self.treasure = False
+
+
+class Hospital:
+    def __init__(self, pos):
+        self.pos = pos
+
+    def treat(self, player):
+        if self.pos == player.pos:
+            player.lives = 3
+
+
+class Labyrinth(Board):
+    def __init__(self, width, height, objects):
+        super().__init__(width, height)
+        self.objects = objects
