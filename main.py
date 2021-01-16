@@ -10,5 +10,20 @@ class Player:
     def get_treasure(self):
         self.treasure = True
 
+    def lose_treasure(self):
+        self.treasure = False
+
     def image(self):
         return self.image
+
+
+class Hole:
+    def __init__(self, pos):
+        self.pos = self.x, self.y = pos
+        self.treasure = False
+
+    def get_treasure(self):
+        self.treasure = True
+
+    def lose_treasure(self):
+        self.treasure = False
