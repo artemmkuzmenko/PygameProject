@@ -4,10 +4,9 @@ from board import Board
 
 
 class Player:
-    def __init__(self, pos, image):
+    def __init__(self, pos):
         self.x, self.y = self.pos = pos
         self.treasure = False
-        self.image = image
         self.lives = 3
 
     def set_pos(self, pos):
@@ -18,9 +17,6 @@ class Player:
 
     def lose_treasure(self):
         self.treasure = False
-
-    def image(self):
-        return self.image
 
 
 class Hole:
@@ -92,3 +88,35 @@ class Bear:
 class Labyrinth(Board):
     def __init__(self, width, height):
         super().__init__(width, height)
+
+    def set_player(self):
+        player = Player((random.choice(range(self.width)), random.choice(range(self.height))))
+        return player
+
+    def set_hole(self):
+        hole = Hole((random.choice(range(self.width)), random.choice(range(self.height))))
+        return hole
+
+    def set_hospital(self):
+        hospital = Hospital((random.choice(range(self.width)), random.choice(range(self.height))))
+        return hospital
+
+    def set_treasure_place(self):
+        treasure_place = TreasurePlace((random.choice(range(self.width)), random.choice(range(self.height))))
+        return treasure_place
+
+    def set_bear(self):
+        bear = Bear((random.choice(range(self.width)), random.choice(range(self.height))))
+        return bear
+
+    def set_river(self, length):
+        positions = []
+        pos = (random.choice(range(self.width)), random.choice(range(self.height)))
+        positions.append(pos)
+        for _ in range(length - 1):
+            x, y = pos
+            pos = random.choice([(x - 1, y), (x - 1, y - 1), (x - 1, y + 1), (x, y - 1), (x, y + 1), (x + 1, y - 1),
+                                 (x + 1, y), (x + 1, y + 1)])
+            positions.append(pos)
+        river = River(positions)
+        return river
