@@ -1,3 +1,5 @@
+import random
+
 from board import Board
 
 
@@ -70,6 +72,21 @@ class Hospital:
     def treat(self, player):
         if self.pos == player.pos:
             player.lives = 3
+
+
+class Bear:
+    def __init__(self, start_pos):
+        self.pos = start_pos
+
+    def move(self):
+        x, y = self.pos
+        pos = random.choice([(x - 1, y), (x - 1, y - 1), (x - 1, y + 1), (x, y - 1), (x, y + 1), (x + 1, y - 1),
+                             (x + 1, y), (x + 1, y + 1)])
+        self.pos = pos
+
+    def attack(self, player):
+        if self.pos == player.pos:
+            player.lives -= 1
 
 
 class Labyrinth(Board):
