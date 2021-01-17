@@ -90,6 +90,5 @@ class Bear:
 
 
 class Labyrinth(Board):
-    def __init__(self, width, height, objects):
+    def __init__(self, width, height):
         super().__init__(width, height)
-        self.objects = objects
