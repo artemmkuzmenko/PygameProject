@@ -85,6 +85,11 @@ class Bear:
             player.lives -= 1
 
 
+class Wall:
+    def __init__(self, pos):
+        self.pos = pos
+
+
 class Labyrinth(Board):
     def __init__(self, width, height):
         super().__init__(width, height)
@@ -95,14 +100,20 @@ class Labyrinth(Board):
 
     def set_hole(self):
         hole = Hole((random.choice(range(self.width)), random.choice(range(self.height))))
+        x, y = hole.pos
+        self.board[x][y] = 'hole'
         return hole
 
     def set_hospital(self):
         hospital = Hospital((random.choice(range(self.width)), random.choice(range(self.height))))
+        x, y = hospital.pos
+        self.board[x][y] = 'hospital'
         return hospital
 
     def set_treasure_place(self):
         treasure_place = TreasurePlace((random.choice(range(self.width)), random.choice(range(self.height))))
+        x, y = treasure_place.pos
+        self.board[x][y] = 'treasure place'
         return treasure_place
 
     def set_bear(self):
@@ -113,10 +124,19 @@ class Labyrinth(Board):
         positions = []
         pos = (random.choice(range(self.width)), random.choice(range(self.height)))
         positions.append(pos)
-        for _ in range(length - 1):
+        for i in range(length - 1):
             x, y = pos
+            self.board[x][y] = i + 1
             pos = random.choice([(x - 1, y), (x - 1, y - 1), (x - 1, y + 1), (x, y - 1), (x, y + 1), (x + 1, y - 1),
                                  (x + 1, y), (x + 1, y + 1)])
             positions.append(pos)
+        x, y = pos
+        self.board[x][y] = length + 1
         river = River(positions)
         return river
+
+    def set_wall(self):
+        wall = Wall((random.choice(range(self.width)), random.choice(self.height)))
+        x, y = wall.pos
+        self.board[x][y] = 'wall'
+        return wall
