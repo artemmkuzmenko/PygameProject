@@ -99,25 +99,38 @@ class Labyrinth(Board):
         return player
 
     def set_hole(self):
-        hole = Hole((random.choice(range(self.width)), random.choice(range(self.height))))
-        x, y = hole.pos
+        while True:
+            hole = Hole((random.choice(range(self.width)), random.choice(range(self.height))))
+            x, y = hole.pos
+            if self.board[x][y] == 0:
+                break
         self.board[x][y] = 'hole'
         return hole
 
     def set_hospital(self):
-        hospital = Hospital((random.choice(range(self.width)), random.choice(range(self.height))))
-        x, y = hospital.pos
+        while True:
+            hospital = Hospital((random.choice(range(self.width)), random.choice(range(self.height))))
+            x, y = hospital.pos
+            if self.board[x][y] == 0:
+                break
         self.board[x][y] = 'hospital'
         return hospital
 
     def set_treasure_place(self):
-        treasure_place = TreasurePlace((random.choice(range(self.width)), random.choice(range(self.height))))
-        x, y = treasure_place.pos
+        while True:
+            treasure_place = TreasurePlace((random.choice(range(self.width)), random.choice(range(self.height))))
+            x, y = treasure_place.pos
+            if self.board[x][y] == 0:
+                break
         self.board[x][y] = 'treasure place'
         return treasure_place
 
     def set_bear(self):
-        bear = Bear((random.choice(range(self.width)), random.choice(range(self.height))))
+        while True:
+            bear = Bear((random.choice(range(self.width)), random.choice(range(self.height))))
+            x, y = bear.pos
+            if self.board[x][y] == 0:
+                break
         return bear
 
     def set_river(self, length):
@@ -136,7 +149,10 @@ class Labyrinth(Board):
         return river
 
     def set_wall(self):
-        wall = Wall((random.choice(range(self.width)), random.choice(self.height)))
-        x, y = wall.pos
+        while True:
+            wall = Wall((random.choice(range(self.width)), random.choice(range(self.height))))
+            x, y = wall.pos
+            if self.board[x][y] == 0:
+                break
         self.board[x][y] = 'wall'
         return wall
