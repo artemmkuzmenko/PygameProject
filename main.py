@@ -13,7 +13,8 @@ class Player:
         self.x, self.y = self.pos = pos
 
     def get_treasure(self):
-        self.treasure = True
+        if self.lives == 3:
+            self.treasure = True
 
     def lose_treasure(self):
         self.treasure = False
