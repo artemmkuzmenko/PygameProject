@@ -7,7 +7,7 @@ from board import Board
 
 
 def load_image(name):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join(name)
     image = pygame.image.load(fullname)
     return image
 
@@ -219,12 +219,12 @@ class Game:
 
     def start_pos(self):
         self.player = self.lab.set_player()
+        self.river = self.lab.set_river(6)
         self.wall = []
         for _ in range(10):
             self.wall.append(self.lab.set_wall())
         self.hole1 = self.lab.set_hole()
         self.hole2 = self.lab.set_hole()
-        self.river = self.lab.set_river(6)
         self.treasure = self.lab.set_treasure()
         self.hospital = self.lab.set_hospital()
         self.bear = self.lab.set_bear()
@@ -290,9 +290,37 @@ def start():
 
 
 def main():
-    pygame.init()
-    size = 500, 500
-    screen = pygame.display.set_mode(size)
-    pygame.display.set_caption('Лабиринт')
-    game = Game
-    game.start_pos()
+    if __name__ == '__main__':
+        pygame.init()
+        size = 500, 500
+        screen = pygame.display.set_mode(size)
+        screen.fill(pygame.Color('white'))
+        pygame.display.set_caption('Лабиринт')
+        start()
+        game = Game()
+        game.start_pos()
+        game.lab.render(screen)
+        running = True
+        pygame.display.flip()
+        while running:
+            for i in range(10):
+                for j in range(10):
+                    if game.lab.board[i][j] != 0:
+                        if game.lab.board[i][j].visible:
+                            screen.blit(game.lab.board[i][j].image, game.lab.board.left + game.lab.board.cell_size * i,
+                                        game.lab.board.top + game.lab.board.cell_size * j)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.K_DOWN:
+                    game.move('down')
+                elif event.type == pygame.K_UP:
+                    game.move('up')
+                elif event.type == pygame.K_LEFT:
+                    game.move('left')
+                elif event.type == pygame.K_RIGHT:
+                    game.move('right')
+        pygame.quit()
+
+
+main()

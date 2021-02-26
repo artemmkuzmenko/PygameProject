@@ -18,6 +18,6 @@ class Board:
     def render(self, screen):
         for i in range(self.width):
             for j in range(self.height):
-                pygame.draw.rect(screen, pygame.Color('white'),
+                pygame.draw.rect(screen, pygame.Color('black'),
                                  ((self.left + self.cell_size * i, self.top + self.cell_size * j),
                                   (self.cell_size, self.cell_size)), 1)
