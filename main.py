@@ -148,7 +148,7 @@ class Labyrinth(Board):  # класс лабиринта
             x, y = hole.pos
             if self.board[x][y] == 0:
                 break
-        self.board[x][y] = 'hole'
+        self.board[x][y] = hole
         return hole
 
     def set_hospital(self):
@@ -157,7 +157,7 @@ class Labyrinth(Board):  # класс лабиринта
             x, y = hospital.pos
             if self.board[x][y] == 0:
                 break
-        self.board[x][y] = 'hospital'
+        self.board[x][y] = hospital
         return hospital
 
     def set_treasure(self):
@@ -175,7 +175,7 @@ class Labyrinth(Board):  # класс лабиринта
             x, y = bear.pos
             if self.board[x][y] == 0:
                 break
-            self.board[x][y] = 'bear'
+            self.board[x][y] = bear
         return bear
 
     def set_river(self, length):
@@ -187,8 +187,8 @@ class Labyrinth(Board):  # класс лабиринта
                 for i in range(length - 1):
                     x, y = pos
                     self.board[x][y] = i + 1
-                    pos = random.choice([(x - 1, y), (x - 1, y - 1), (x - 1, y + 1), (x, y - 1), (x, y + 1), (x + 1, y - 1),
-                                        (x + 1, y), (x + 1, y + 1)])
+                    pos = random.choice([(x - 1, y), (x - 1, y - 1), (x - 1, y + 1), (x, y - 1), (x, y + 1),
+                                         (x + 1, y - 1), (x + 1, y), (x + 1, y + 1)])
                     positions.append(pos)
                 x, y = pos
                 river = River(positions)
@@ -209,7 +209,7 @@ class Labyrinth(Board):  # класс лабиринта
 
     def set_exit(self):
         while True:
-            x, y = random.choice(range(self.width)), random.choice(range(self.height))
+            x, y = random.choice([0, 9]), random.choice([0, 9])
             if self.board[x][y] == 0:
                 break
             self.board[x][y] = 'exit'
@@ -220,6 +220,7 @@ class Game:  # класс самой игры
         self.lab = Labyrinth(10, 10)
         self.lab.set_view(10, 10, 40)
         self.screen = screen
+        self.victory = False
 
     def start_pos(self):
         self.player = self.lab.set_player()
@@ -251,40 +252,44 @@ class Game:  # класс самой игры
             x1, y1 = x + 1, y
         if str(self.lab.board[x1][y1]) == 'wall':
             self.lab.board[x1][y1].visible = True
+        elif x1 > 9 or x1 < 0 or y1 > 9 or y1 < 0:
+            pass
         else:
             self.player.pos = x1, y1
+            self.player.x = x1
+            self.player.y = y1
         x, y = self.player.pos
-        object = self.lab.board[x][y]
         # прописываем действия для разных объектов
-        if str(object) == 'treasure place':
+        if str(self.lab.board[x][y]) == 'treasure place':
             self.player.get_treasure()
             self.treasure.visible = True
             self.lab.board[x][y] = 0
-        elif str(object) == 'hole':
-            if object.treasure:
+        elif str(self.lab.board[x][y]) == 'hole':
+            if self.lab.board[x][y].treasure:
                 self.player.get_treasure()
-                object.lose_treasure()
+                self.lab.board[x][y].lose_treasure()
             else:
-                object.injure(self.player)
+                self.lab.board[x][y].injure(self.player)
                 if self.player.treasure:
                     self.player.lose_treasure()
-                    object.get_tresure()
-        elif str(object) == 'hospital':
-            object.treat(self.player)
-        elif str(object) == 'bear':
-            object.attack(self.player)
+                    self.lab.board[x][y].get_treasure()
+        elif str(self.lab.board[x][y]) == 'hospital':
+            self.lab.board[x][y].treat(self.player)
+        elif str(self.lab.board[x][y]) == 'bear':
+            self.lab.board[x][y].attack(self.player)
             if self.player.treasure:
                 self.player.lose_treasure()
-        elif str(object) == 'exit' and self.player.treasure:
+        elif str(self.lab.board[x][y]) == 'exit' and self.player.treasure:
             win(self.screen)
-        elif str(object) == 'river':
-            if object.treasure:
+            self.victory = True
+        elif str(self.lab.board[x][y]) == 'river':
+            if self.lab.board[x][y].treasure:
                 self.player.get_treasure()
-                object.lose_treasure()
+                self.lab.board[x][y].lose_treasure()
             else:
                 if self.player.treasure:
                     self.treasure.pos = self.river.positions[-1]
-                object.injure(self.player)
+                self.lab.board[x][y].injure(self.player)
         if self.player.treasure:
             self.treasure.pos = self.player.pos
         self.bear.move()
@@ -293,12 +298,12 @@ class Game:  # класс самой игры
 # функции победы проигрыша и заставки
 def win(screen):
     image = load_image('victory.jpg')
-    screen.blit(image, 0, 0)
+    screen.blit(image, (0, 0))
 
 
 def game_over(screen):
-    image = load_image('game_over.jpg')
-    screen.blit(image, 0, 0)
+    image = load_image('game over.jpg')
+    screen.blit(image, (0, 0))
 
 
 def start(screen):
@@ -314,33 +319,42 @@ def main():
         pygame.display.set_caption('Лабиринт')
         start(screen)
         pygame.time.delay(2000)
-        screen.fill(pygame.Color('white'))
         pygame.display.flip()
         game = Game(screen)
         game.start_pos()
-        game.lab.render(screen)
         running = True
         pygame.display.flip()
         while running:
+            screen.fill(pygame.Color('white'))
+            game.lab.render(screen)
             if game.player.lives == 0:
                 game_over(screen)
+                pygame.time.delay(2000)
+                running = False
+            if game.victory:
+                running = False
             for i in range(10):
                 for j in range(10):
                     if not isinstance(game.lab.board[i][j], int) and not isinstance(game.lab.board[i][j], str):
                         if game.lab.board[i][j].visible:
-                            screen.blit(game.lab.board[i][j].image, game.lab.board.left + game.lab.board.cell_size * i,
-                                        game.lab.board.top + game.lab.board.cell_size * j)
+                            screen.blit(game.lab.board[i][j].image, (game.lab.left + game.lab.cell_size * i,
+                                        game.lab.top + game.lab.cell_size * j))
+            screen.blit(game.player.image, (game.player.x * game.lab.cell_size + game.lab.left,
+                        game.player.y * game.lab.cell_size + game.lab.top))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                elif event.type == pygame.K_DOWN:
-                    game.move('down')
-                elif event.type == pygame.K_UP:
-                    game.move('up')
-                elif event.type == pygame.K_LEFT:
-                    game.move('left')
-                elif event.type == pygame.K_RIGHT:
-                    game.move('right')
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN:
+                        game.move('down')
+                    elif event.key == pygame.K_UP:
+                        game.move('up')
+                    elif event.key == pygame.K_LEFT:
+                        game.move('left')
+                    elif event.key == pygame.K_RIGHT:
+                        game.move('right')
+            screen.blit(game.player.image, (game.player.x * game.lab.cell_size + game.lab.left,
+                                            game.player.y * game.lab.cell_size + game.lab.top))
             pygame.display.flip()
         pygame.quit()
 
