@@ -192,7 +192,8 @@ class Labyrinth(Board):  # класс лабиринта
                     positions.append(pos)
                 x, y = pos
                 river = River(positions)
-                self.board[x][y] = river
+                for x, y in positions:
+                    self.board[x][y] = river
                 break
             except IndexError:
                 pass
@@ -225,6 +226,7 @@ class Game:  # класс самой игры
     def start_pos(self):
         self.player = self.lab.set_player()
         self.river = self.lab.set_river(6)
+        self.lab.set_exit()
         self.wall = []
         for _ in range(10):
             self.wall.append(self.lab.set_wall())
@@ -233,7 +235,7 @@ class Game:  # класс самой игры
         self.treasure = self.lab.set_treasure()
         self.hospital = self.lab.set_hospital()
         self.bear = self.lab.set_bear()
-        self.lab.set_exit()
+
 
     # сам ход
     def move(self, direction):
@@ -250,11 +252,16 @@ class Game:  # класс самой игры
             x1, y1 = x - 1, y
         elif direction == 'right':
             x1, y1 = x + 1, y
-        if str(self.lab.board[x1][y1]) == 'wall':
-            self.lab.board[x1][y1].visible = True
-        elif x1 > 9 or x1 < 0 or y1 > 9 or y1 < 0:
+        wall = False
+        try:
+            if str(self.lab.board[x1][y1]) == 'wall':
+                self.lab.board[x1][y1].visible = True
+                wall = True
+        except IndexError:
             pass
-        else:
+        if x1 > 9 or x1 < 0 or y1 > 9 or y1 < 0:
+            pass
+        elif not wall:
             self.player.pos = x1, y1
             self.player.x = x1
             self.player.y = y1
