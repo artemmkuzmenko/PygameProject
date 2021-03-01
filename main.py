@@ -209,11 +209,7 @@ class Labyrinth(Board):  # класс лабиринта
         return wall
 
     def set_exit(self):
-        while True:
-            x, y = random.choice([0, 9]), random.choice([0, 9])
-            if self.board[x][y] == 0:
-                break
-            self.board[x][y] = 'exit'
+        self.board[9][9] = 'exit'
 
 
 class Game:  # класс самой игры
@@ -339,6 +335,7 @@ def main():
                 pygame.time.delay(2000)
                 running = False
             if game.victory:
+                pygame.time.delay(2000)
                 running = False
             for i in range(10):
                 for j in range(10):
